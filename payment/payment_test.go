@@ -14,8 +14,8 @@ func TestPayment(test *testing.T) {
 	th.SetNext(&bh).SetNext(&nh)
 
 	test.Run("Test payment", func(test *testing.T) {
-		bonusAmount := 10.0
-		amount := 100.0
+		percent := 10.0
+		amount := 200.0
 		t, err := utils.GetTransaction(amount)
 		if err != nil {
 			test.Fatal(err)
@@ -34,8 +34,8 @@ func TestPayment(test *testing.T) {
 			test.Errorf("expected user balance to be %f, got %v", ub-amount, t.User.Balance.Amount)
 		}
 
-		if t.User.BonusBalance.Amount != ubb+bonusAmount {
-			test.Errorf("expected user bonus balance to be %f, got %v", ubb+bonusAmount, t.User.BonusBalance.Amount)
+		if t.User.BonusBalance.Amount != ubb+amount*(percent/100) {
+			test.Errorf("expected user bonus balance to be %f, got %v", ubb+amount*(percent/100), t.User.BonusBalance.Amount)
 		}
 
 		if t.Merchant.Balance.Amount != mb+amount {

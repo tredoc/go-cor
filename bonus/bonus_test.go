@@ -20,32 +20,45 @@ func TestBonus_Accrue(test *testing.T) {
 		test.Fatal(err)
 	}
 
-	bb := t1.User.BonusBalance.Amount
+	t3, err := utils.GetTransaction(555)
+	if err != nil {
+		test.Fatal(err)
+	}
 
 	tests := []struct {
 		name string
 		t    *transaction.Transaction
+		bb   float64
 	}{
 		{
-			name: "Test accrue bonus",
+			name: "Test accrue 10 bonus",
 			t:    t1,
+			bb:   t1.User.BonusBalance.Amount,
 		},
 		{
 			name: "Test not accrue bonus",
 			t:    t2,
+			bb:   t1.User.BonusBalance.Amount,
+		},
+		{
+			name: "Test accrue 10% bonus",
+			t:    t3,
+			bb:   t1.User.BonusBalance.Amount,
 		},
 	}
 
 	for _, tt := range tests {
 		test.Run(tt.name, func(t *testing.T) {
-			b, err := bonus.NewBonus(tt.t)
+			threshold := 100.0
+			percent := 10.0
+			b, err := bonus.NewBonus(tt.t, threshold, percent)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			b.Accrue()
-			if tt.t.Amount > 100 && tt.t.User.BonusBalance.Amount != bb+tt.t.Amount {
-				t.Errorf("Bonus.Accrue() = %v, want %v", tt.t.User.BonusBalance.Amount, tt.t.Amount)
+			if tt.t.Amount > threshold && utils.AlmostEqual(tt.t.User.BonusBalance.Amount, tt.bb+tt.t.Amount, percent/10000000.0) {
+				t.Errorf("user bonus balance is %f, want %f", tt.t.User.BonusBalance.Amount, tt.bb+tt.t.Amount*(percent/100.0))
 			}
 		})
 	}

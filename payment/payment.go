@@ -47,7 +47,7 @@ func (bh *BonusHandler) SetNext(handler Handler) Handler {
 }
 
 func (bh *BonusHandler) Handle(t *transaction.Transaction) error {
-	bns, err := bonus.NewBonus(t)
+	bns, err := bonus.NewBonus(t, 100.0, 10.0)
 	if err != nil {
 		return err
 	}

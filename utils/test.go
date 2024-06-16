@@ -6,6 +6,7 @@ import (
 	"github.com/tredoc/go-cor/merchant"
 	"github.com/tredoc/go-cor/transaction"
 	"github.com/tredoc/go-cor/user"
+	"math"
 )
 
 func GetUser(amount float64) (*user.User, error) {
@@ -42,12 +43,12 @@ func GetMerchant(amount float64) (*merchant.Merchant, error) {
 }
 
 func GetTransaction(amount float64) (*transaction.Transaction, error) {
-	ub, err := balance.NewBalance(1, 1, 100.0)
+	ub, err := balance.NewBalance(1, 1, 1000.0)
 	if err != nil {
 		return nil, err
 	}
 
-	ubb, err := balance.NewBalance(1, 1, 100.0)
+	ubb, err := balance.NewBalance(1, 1, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,7 @@ func GetTransaction(amount float64) (*transaction.Transaction, error) {
 		return nil, err
 	}
 
-	mb, err := balance.NewBalance(5, 2, 100.0)
+	mb, err := balance.NewBalance(5, 2, 1000.0)
 	if err != nil {
 		return nil, err
 	}
@@ -73,4 +74,8 @@ func GetTransaction(amount float64) (*transaction.Transaction, error) {
 	}
 
 	return t, nil
+}
+
+func AlmostEqual(a, b, epsilon float64) bool {
+	return math.Abs(a-b) <= epsilon
 }

@@ -21,8 +21,8 @@ func NewBalance(ID int, userID int, amount float64) (*Balance, error) {
 		return nil, errors.New("userID cannot be empty")
 	}
 
-	if amount == 0 {
-		return nil, errors.New("amount cannot be empty")
+	if amount < 0 {
+		return nil, errors.New("amount cannot be negative")
 	}
 
 	return &Balance{ID: ID, UserID: userID, Amount: amount}, nil

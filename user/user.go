@@ -34,5 +34,5 @@ func NewUser(ID int, password string, username string, balance *balance.Balance,
 		return nil, errors.New("bonus balance cannot be empty")
 	}
 
-	return &User{ID: ID, Password: password, Username: username}, nil
+	return &User{ID: ID, Password: password, Username: username, Balance: balance, BonusBalance: bonusBalance}, nil
 }

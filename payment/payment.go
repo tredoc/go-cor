@@ -2,32 +2,36 @@ package payment
 
 import (
 	"github.com/tredoc/go-cor/bonus"
-	"github.com/tredoc/go-cor/notify"
+	"github.com/tredoc/go-cor/notification"
 	"github.com/tredoc/go-cor/transaction"
 )
 
 type Handler interface {
 	SetNext(handler Handler) Handler
-	Handle(t *transaction.Transaction)
+	Handle(t *transaction.Transaction) error
 }
 
 type TransferHandler struct {
 	next Handler
 }
 
-func (t *TransferHandler) SetNext(handler Handler) Handler {
-	t.next = handler
+func (th *TransferHandler) SetNext(handler Handler) Handler {
+	th.next = handler
 	return handler
 }
 
-func (t *TransferHandler) Handle(tr *transaction.Transaction) error {
-	err := tr.Handle()
+func (th *TransferHandler) Handle(t *transaction.Transaction) error {
+	err := t.Transfer()
 	if err != nil {
 		return err
 	}
 
-	if t.next == nil {
-		t.next.Handle(tr)
+	if th.next == nil {
+		return nil
+	}
+	err = th.next.Handle(t)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -37,51 +41,56 @@ type BonusHandler struct {
 	next Handler
 }
 
-func (b *BonusHandler) SetNext(handler Handler) Handler {
-	b.next = handler
+func (bh *BonusHandler) SetNext(handler Handler) Handler {
+	bh.next = handler
 	return handler
 }
 
-func (b *BonusHandler) Handle(tr *transaction.Transaction) error {
-	bns, err := bonus.NewBonus(tr)
+func (bh *BonusHandler) Handle(t *transaction.Transaction) error {
+	bns, err := bonus.NewBonus(t)
 	if err != nil {
 		return err
 	}
 
-	err = bns.Handle()
+	bns.Accrue()
+
+	if bh.next == nil {
+		return nil
+	}
+	err = bh.next.Handle(t)
 	if err != nil {
 		return err
-	}
-
-	if b.next == nil {
-		b.next.Handle(tr)
 	}
 
 	return nil
 }
 
-type NotifyHandler struct {
+type NotificationHandler struct {
 	next Handler
 }
 
-func (n *NotifyHandler) SetNext(handler Handler) Handler {
-	n.next = handler
+func (nh *NotificationHandler) SetNext(handler Handler) Handler {
+	nh.next = handler
 	return handler
 }
 
-func (n *NotifyHandler) Handle(tr *transaction.Transaction) error {
-	nf, err := notify.NewNotify(tr)
+func (nh *NotificationHandler) Handle(t *transaction.Transaction) error {
+	nf, err := notification.NewNotification(t)
 	if err != nil {
 		return err
 	}
 
-	err = nf.Handle()
+	err = nf.Send()
 	if err != nil {
 		return err
 	}
 
-	if n.next == nil {
-		n.next.Handle(tr)
+	if nh.next == nil {
+		return nil
+	}
+	err = nh.next.Handle(t)
+	if err != nil {
+		return err
 	}
 
 	return nil

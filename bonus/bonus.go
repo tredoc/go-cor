@@ -18,15 +18,11 @@ func NewBonus(t *transaction.Transaction) (*Bonus, error) {
 	return &Bonus{Transaction: t}, nil
 }
 
-func (b *Bonus) Handle() error {
-	if b.Transaction.Amount < 100 {
-		return errors.New("transfer amount must be greater than 100")
+func (b *Bonus) Accrue() {
+	if b.Transaction.Amount >= 100 {
+		b.Transaction.User.BonusBalance.Mu.Lock()
+		defer b.Transaction.User.BonusBalance.Mu.Unlock()
+
+		b.Transaction.User.BonusBalance.Amount += 10
 	}
-
-	b.Transaction.User.BonusBalance.Mu.Lock()
-	defer b.Transaction.User.BonusBalance.Mu.Unlock()
-
-	b.Transaction.User.BonusBalance.Amount += 10
-
-	return nil
 }

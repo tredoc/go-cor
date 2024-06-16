@@ -11,17 +11,5 @@ If the transaction amount is greater than 10, the user gets 10% of the transacti
     - Implement a simple merchant system
     - System should handle transfers in a thread-safe manner
 
-
-
-Users
-
-Balances
-
-Transactions (from user to merchant)
-id
-amount
-merchant_id
-user_id
-
-Merchants notification
-1 (slack) OR 2 (email and sms)
+### To run tests:  
+`make tezt`

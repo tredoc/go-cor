@@ -5,22 +5,14 @@ import (
 	"github.com/tredoc/go-cor/balance"
 )
 
-type Notification string
-
-const (
-	Email Notification = "email"
-	SMS   Notification = "sms"
-)
-
 type Merchant struct {
-	ID               int
-	Name             string
-	UserID           int
-	Balance          *balance.Balance
-	NotificationType Notification
+	ID      int
+	Name    string
+	UserID  int
+	Balance *balance.Balance
 }
 
-func NewMerchant(ID int, name string, userID int, balance *balance.Balance, notificationType Notification) (*Merchant, error) {
+func NewMerchant(ID int, name string, userID int, balance *balance.Balance) (*Merchant, error) {
 	if ID == 0 {
 		return nil, errors.New("ID cannot be empty")
 	}
@@ -37,9 +29,5 @@ func NewMerchant(ID int, name string, userID int, balance *balance.Balance, noti
 		return nil, errors.New("balance cannot be empty")
 	}
 
-	if notificationType == "" {
-		return nil, errors.New("notificationType cannot be empty")
-	}
-
-	return &Merchant{ID: ID, Name: name, UserID: userID, Balance: balance, NotificationType: notificationType}, nil
+	return &Merchant{ID: ID, Name: name, UserID: userID, Balance: balance}, nil
 }

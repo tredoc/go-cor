@@ -2,7 +2,6 @@ package bonus
 
 import (
 	"errors"
-	"fmt"
 	"github.com/tredoc/go-cor/transaction"
 )
 
@@ -25,14 +24,15 @@ func NewBonus(t *transaction.Transaction, threshold float64, percent float64) (*
 		return nil, errors.New("percent cannot be zero or negative")
 	}
 
-	return &Bonus{Transaction: t}, nil
+	return &Bonus{Transaction: t, Threshold: threshold, Percent: percent}, nil
 }
 
 func (b *Bonus) Accrue() {
 	if b.Transaction.Amount >= b.Threshold {
 		b.Transaction.User.BonusBalance.Mu.Lock()
 		defer b.Transaction.User.BonusBalance.Mu.Unlock()
-		fmt.Println("HERE")
-		b.Transaction.User.BonusBalance.Amount += (b.Transaction.Amount * (b.Percent / 100.0))
+
+		bonusAmount := b.Transaction.Amount * (b.Percent / 100.0)
+		b.Transaction.User.BonusBalance.Amount += bonusAmount
 	}
 }

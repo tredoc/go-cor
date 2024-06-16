@@ -12,4 +12,4 @@ If the transaction amount is greater than 10, the user gets 10% of the transacti
     - System should handle transfers in a thread-safe manner
 
 ### To run tests:  
-`make tezt`
+`make test`
